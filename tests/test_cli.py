@@ -1939,6 +1939,22 @@ def test_regression_new_version_cli_in_files(tmpdir, capsys):
     assert "current_version = 0.9.3" in tmpdir.join(".bumpversion.cfg").read()
 
 
+def test_bug_replace_with_multiple_matches_should_not_replace_partial_match(tmpdir):
+    tmpdir.chdir()
+    tmpdir.join("version.txt").write(dedent("""
+        actual_version = 1.5.7
+        unrelated_version = 21.5.7
+    """))
+    tmpdir.join(".bumpversion.cfg").write(dedent("""
+        [bumpversion]
+        current_version = 1.5.7
+    """))
+
+    main(["patch", "version.txt"])
+
+    assert "21.5.7" in tmpdir.join("version.txt").read()
+
+
 def test_correct_interpolation_for_setup_cfg_files(tmpdir, configfile):
     """
     Reported here: https://github.com/c4urself/bump2version/issues/21
